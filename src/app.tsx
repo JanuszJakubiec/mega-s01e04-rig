@@ -1,9 +1,17 @@
 import { Hono } from 'hono';
 import { loadConfig, type RigConfig } from './config.js';
 import { lane } from './lane.js';
+import { readNight } from './digest/reader.js';
 import { readStatus } from './status.js';
 import { Layout } from './views/layout.js';
+import { Digest } from './views/digest.js';
 import { StatusBoard } from './views/status.js';
+
+function isValidNight(night: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(night)) return false;
+  const date = new Date(`${night}T00:00:00Z`);
+  return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === night;
+}
 
 export function createApp(config: RigConfig = loadConfig()) {
   const app = new Hono();
@@ -17,6 +25,21 @@ export function createApp(config: RigConfig = loadConfig()) {
       </Layout>,
     ),
   );
+
+  app.get('/digest/:night', async (c) => {
+    const night = c.req.param('night');
+    if (!isValidNight(night)) return c.notFound();
+
+    const digest = await readNight(config.runsDir, night);
+    if (!digest.found) return c.notFound();
+
+    return c.html(
+      <Layout title={`digest · ${night}`} lane={lane()}>
+        <p><a href="/">status</a></p>
+        <Digest night={night} digest={digest} />
+      </Layout>,
+    );
+  });
 
   return app;
 }

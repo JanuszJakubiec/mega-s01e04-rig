@@ -7,15 +7,27 @@ import type { Lane } from '../lane.js';
 const css = `
   :root { color-scheme: light dark; --fg: #1d1d1b; --bg: #f6f4ee; --mute: #6b6a64; --line: #d9d5c9; --warn: #a14a12; }
   @media (prefers-color-scheme: dark) { :root { --fg: #e8e6df; --bg: #161614; --mute: #9a988f; --line: #33322e; --warn: #e08a4f; } }
+  * { box-sizing: border-box; }
   body { margin: 0; font: 15px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--fg); background: var(--bg); }
-  header { display: flex; gap: 1.5rem; padding: .75rem 1.25rem; border-bottom: 1px solid var(--line); }
+  header { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; padding: .75rem 1.25rem; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
   header .marker { margin-left: auto; color: var(--mute); }
   main { padding: 1.25rem; max-width: 60rem; }
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: .15em; }
+  a:focus-visible, .table-region:focus-visible { outline: 2px solid var(--warn); outline-offset: 2px; }
   table { border-collapse: collapse; width: 100%; }
-  th, td { text-align: left; padding: .35rem .75rem .35rem 0; border-bottom: 1px solid var(--line); }
+  th, td { text-align: left; padding: .35rem .75rem .35rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { color: var(--mute); font-weight: normal; }
+  .table-region { overflow-x: auto; max-width: 100%; }
+  .table-region > table { min-width: 58rem; }
   .warn { color: var(--warn); }
+  .warn-row > th, .warn-row > td { color: var(--warn); }
+  .warning-label { font-weight: bold; }
   .mute { color: var(--mute); }
+  @media (max-width: 30rem) {
+    header { padding: .75rem; }
+    header .marker { margin-left: 0; width: 100%; }
+    main { padding: .75rem; }
+  }
 `;
 
 export function Layout(props: { title: string; lane: Lane; children: Child }) {
@@ -25,12 +37,13 @@ export function Layout(props: { title: string; lane: Lane; children: Child }) {
       <html lang="en">
         <head>
           <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <title>rig · {props.title}</title>
           <style>{raw(css)}</style>
         </head>
         <body>
           <header>
-            <strong>rig</strong>
+            <strong><a href="/">rig</a></strong>
             <span>{props.lane.id}</span>
             <span class="marker">{props.lane.marker ?? 'no marker set'}</span>
           </header>
