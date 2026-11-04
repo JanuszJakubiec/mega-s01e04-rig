@@ -116,6 +116,19 @@ describe('digest routes', () => {
     expect(htmlResponse.status).toBe(200);
     expect(jsonResponse.status).toBe(200);
     expect(json).toEqual(expectedDigest);
+    const tableBody = /<tbody>([\s\S]*?)<\/tbody>/.exec(html)?.[1] ?? '';
+    const renderedRows = [...tableBody.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/g)].map(([, row]) =>
+      [...row.matchAll(/<(?:th|td)\b[^>]*>([\s\S]*?)<\/(?:th|td)>/g)].map(([, cell], column) => {
+        const text = cell.replace(/<[^>]*>/g, '')
+          .replaceAll('&lt;', '<').replaceAll('&gt;', '>')
+          .replaceAll('&quot;', '"').replaceAll('&#39;', "'").replaceAll('&amp;', '&');
+        return column === 0 ? text.replace(/ · needs attention$/, '') : text;
+      }),
+    );
+    expect(renderedRows).toEqual(json.rows.map((row) => [
+      row.job, row.owner ?? '—', String(row.runs), String(row.retries), String(row.failures),
+      row.lastStatus, row.lastError ?? '—', row.firstAt, row.lastAt,
+    ]));
     expect(html).toContain('&lt;script&gt;job&lt;/script&gt;');
     expect(html).not.toContain('<script>job</script>');
     expect(html).toContain('&lt;owner&gt;');
