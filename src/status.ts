@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs';
 import type { RigConfig } from './config.js';
+import { isCalendarDate } from './digest/night.js';
 import { lastBeat, type Beat } from './heartbeat.js';
 
 export type Status = {
@@ -12,9 +13,10 @@ export type Status = {
 // Nights on disk = runs/<YYYY-MM-DD>.jsonl, newest first.
 export function nightsOnDisk(runsDir: string): string[] {
   try {
-    return readdirSync(runsDir)
-      .filter((f) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(f))
-      .map((f) => f.slice(0, 10))
+    return readdirSync(runsDir, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(entry.name))
+      .map((entry) => entry.name.slice(0, 10))
+      .filter(isCalendarDate)
       .sort()
       .reverse();
   } catch {
