@@ -73,7 +73,7 @@ const expectedDigest = {
     },
   ],
   badLines: 1,
-  counts: { ok: 3, retry: 3, fail: 2 },
+  counts: { ok: 4, retry: 3, fail: 2 },
 } satisfies NightDigest;
 
 let runsDir: string;
@@ -123,7 +123,8 @@ describe('digest routes', () => {
     expect(html).toContain('—');
     expect(html).toContain('2026-02-01T00:10:00+02:00');
     expect(html).toContain('2026-02-01T00:20:00+02:00');
-    expect(html).toMatch(/<tr[^>]*class="warn"[^>]*>[\s\S]*?retry\/job/);
+    expect(html).toMatch(/<tr class="warn-row"><th scope="row">retry\/job<span class="warning-label"> · needs attention<\/span>/);
+    expect(html).toMatch(/<tr class="warn-row"><th scope="row">alpha<span class="warning-label"> · needs attention<\/span>/);
 
     const orderedJobs = expectedDigest.rows.map(({ job }) => html.indexOf(job === '<script>job</script>' ? '&lt;script&gt;job&lt;/script&gt;' : job));
     expect(orderedJobs.every((position, index) => index === 0 || position > orderedJobs[index - 1]!)).toBe(true);
