@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { loadConfig, type RigConfig } from './config.js';
 import { readNight } from './digest/reader.js';
 import { lane } from './lane.js';
-import { readNight } from './digest/reader.js';
 import { readStatus } from './status.js';
 import { Layout } from './views/layout.js';
 import { Digest } from './views/digest.js';
@@ -31,13 +30,21 @@ export function createApp(config: RigConfig = loadConfig()) {
     }
   });
 
-  app.get('/', (c) =>
-    c.html(
+  app.get('/', async (c) => {
+    const status = readStatus(config);
+    const nights = await Promise.all(
+      status.nights.map(async (night) => ({
+        night,
+        digest: await readNight(config.runsDir, night),
+      })),
+    );
+
+    return c.html(
       <Layout title="status" lane={lane()}>
-        <StatusBoard status={readStatus(config)} />
+        <StatusBoard status={status} nights={nights} />
       </Layout>,
-    ),
-  );
+    );
+  });
 
   app.get('/digest/:night', async (c) => {
     const night = c.req.param('night');
