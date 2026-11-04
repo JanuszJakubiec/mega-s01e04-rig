@@ -1,8 +1,9 @@
 ---
 plan: morning-digest
-status: ready
+status: done
 owner: rook
 opened: 2026-10-29
+closed: 2026-11-04
 ---
 
 # Morning digest
@@ -77,3 +78,29 @@ page again with `LANE_MARKER` unset (the banner reads "no marker set") and uploa
 link. Move this plan to `docs/plans/done/` with its issue list.
 
 Done when: the preview link no longer shows the lane marker.
+
+## Issues
+
+| # | Issue | Blocked by | Worker |
+|---|-------|------------|--------|
+| [1](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/1) | Digest contract | — | pi · gpt-6.1-sol · medium |
+| [2](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/2) | Run log reader | #1 | pi · gpt-6.1-sol · medium |
+| [3](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/3) | Digest page | #1 | pi · gpt-5.6-terra · medium |
+| [4](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/4) | Digest JSON | #1 | pi · gpt-5.6-terra · medium |
+| [5](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/5) | Board digest links | #1 | pi · gpt-5.6-terra · medium |
+| [6](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/6) | Digest route tests | #1, #2, #3, #4 | pi · gpt-5.6-terra · medium |
+| [7](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/7) | Publish review preview | #2–#6 | pi · gpt-6.1-sol · medium |
+| [8](https://github.com/JanuszJakubiec/mega-s01e04-rig/issues/8) | Remove preview marker and archive plan | #7 and reviewer outcome | pi · gpt-6.1-sol · medium |
+
+## Review and cleanup
+
+The reviewer confirmed seeing the preview on 2026-11-04. Issue #7 was initially closed too early,
+then reopened after the course rejected that state; it stayed open while review was pending.
+After the reviewer looked and the human separately approved cleanup, the page was rendered again
+with `LANE_MARKER` unset and uploaded over the same public URL. The banner now reads
+"no marker set"; the sample digest data is unchanged. No preview, environment file, or marker is
+stored in this repository.
+
+Validation: 57 tests passed, typecheck passed, independent review found no remaining blockers,
+and the digest was checked at 1440×900 and 390×844, including the marker-free copy. The same public
+HTTPS URL was fetched to verify that its HTML matches the marker-free copy.
