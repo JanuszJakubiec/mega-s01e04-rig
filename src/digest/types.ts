@@ -8,6 +8,8 @@ export type DigestRow = {
   runs: number;
   /** Records whose status is retry, not runs minus one. */
   retries: number;
+  /** Records whose status is fail, including failures followed by recovery. */
+  failures: number;
   lastStatus: DigestStatus;
   /** Error on the last record, or null when absent; never a stale error. */
   lastError: string | null;
